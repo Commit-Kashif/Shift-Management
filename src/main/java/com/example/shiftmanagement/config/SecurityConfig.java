@@ -1,17 +1,17 @@
 package com.example.shiftmanagement.config;
-
+ 
 import com.example.shiftmanagement.service.CustomUserDetailsService;
-
+ 
 import com.example.shiftmanagement.util.JwtAuthenticationEntryPoint;
 import com.example.shiftmanagement.util.JwtRequestFilter;
-
+ 
 import jakarta.servlet.http.HttpServletRequest;
-
+ 
 import java.util.Arrays;
 import java.util.Collections;
-
+ 
 import java.util.*;
-
+ 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -28,17 +28,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-
+ 
+ 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-
+ 
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtRequestFilter jwtRequestFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
+ 
     public SecurityConfig(CustomUserDetailsService customUserDetailsService,
                           JwtRequestFilter jwtRequestFilter,
                           JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
@@ -46,7 +46,7 @@ public class SecurityConfig {
         this.jwtRequestFilter = jwtRequestFilter;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
     }
-
+ 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -54,7 +54,9 @@ public class SecurityConfig {
                 @Override
                 public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                     CorsConfiguration configuration = new CorsConfiguration();
-                    configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+//                    configuration.addAllowedOrigin("http://localhost:8091");
+//                    configuration.addAllowedOrigin("http://10.105.3.86:8091");
+                    configuration.setAllowedOriginPatterns(Collections.singletonList("http://*"));
                     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
                     configuration.setAllowedHeaders(Collections.singletonList("*"));
                     configuration.setAllowCredentials(true);
@@ -75,17 +77,17 @@ public class SecurityConfig {
             .sessionManagement(sessionManagement -> sessionManagement
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             );
-
+ 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
+ 
         return http.build();
     }
-
+ 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
+ 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
