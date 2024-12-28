@@ -64,6 +64,9 @@ public class SecurityConfig {
                 }
             }))
             .csrf(csrf -> csrf.disable())  // Disable CSRF for stateless APIs
+            .requiresChannel(channel -> channel
+                .anyRequest().requiresSecure()  // Forces HTTPS
+            )
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/shift/upload").hasRole("MANAGER")
